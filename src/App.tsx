@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { useAuth } from "./hooks/useAuth";
 import Landing from "./pages/landing";
 import Dashboard from "./pages/dashboard";
 import Profile from "./pages/profile";

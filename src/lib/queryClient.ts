@@ -37,21 +37,31 @@ export async function apiRequest<T>(
   method: string,
   url: string,
   data?: unknown,
-  formData?: unknown
+  formData?: FormData
 ): Promise<T> {
-  const makeRequest = async (accessToken?: string): Promise<Response> => {
+  const makeRequest = async (accessToken: string): Promise<Response> => {
+    const headers: HeadersInit = {};
+
+    if (data) {
+      headers["Content-Type"] = "application/json";
+    }
+
+    if (accessToken) {
+      headers["Authorization"] = `Bearer ${accessToken}`;
+    }
+
+    const body = data
+      ? JSON.stringify(data)
+      : formData ?? undefined;
     return await fetch(`${API_BASE_URL}${url}`, {
       method,
-      headers: {
-        ...(data ? { "Content-Type": "application/json" } : {}),
-        ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
-      },
-      body: data ? JSON.stringify(data) : (formData || undefined),
+      headers,
+      body,
     });
   };
 
   let token = localStorage.getItem("token");
-  let res = await makeRequest(token);
+  let res = await makeRequest(token || "");
 
   if (res.status === 401) {
     try {

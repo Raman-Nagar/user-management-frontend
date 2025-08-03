@@ -32,7 +32,6 @@ import {
   Search,
   Plus,
   Edit,
-  Eye,
   Trash2,
   ChevronLeft,
   ChevronRight,
@@ -59,7 +58,7 @@ export function UserTable() {
   const navigate = useNavigate();
   const limit = 10;
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading } = useQuery<{ total: number; users: UserType[] }>({
     queryKey: ["/api/users", { page, limit, search, sortBy, sortOrder }],
     queryFn: async () => {
       const params = new URLSearchParams({
@@ -75,7 +74,7 @@ export function UserTable() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: async (userId: string) => {
+    mutationFn: async (userId: number) => {
       await apiRequest("DELETE", `/user/${userId}`);
     },
     onSuccess: () => {
@@ -135,7 +134,7 @@ export function UserTable() {
     );
   };
 
-  const getLastActive = (lastActiveAt: string | null) => {
+  const getLastActive = (lastActiveAt: string = "") => {
     if (!lastActiveAt) return "Never";
     return formatDistanceToNow(new Date(lastActiveAt), { addSuffix: true });
   };
@@ -343,7 +342,9 @@ export function UserTable() {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => deleteUser && deleteMutation.mutate(deleteUser.id)}
+              onClick={async () =>
+                deleteUser && (await deleteMutation.mutateAsync(deleteUser.id))
+              }
               className="bg-red-600 hover:bg-red-700"
             >
               Delete

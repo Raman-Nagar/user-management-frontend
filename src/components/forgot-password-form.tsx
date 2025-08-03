@@ -8,7 +8,7 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { useForgotPassword } from "../hooks/useAuth";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 
 const forgotPassSchema = z.object({
   email: z.email("Invalid email"),
@@ -18,7 +18,6 @@ export function ForgotPasswordForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const navigate = useNavigate();
   const [error, setError] = useState("");
   const { mutateAsync: frogotPassword, isPending } = useForgotPassword();
 

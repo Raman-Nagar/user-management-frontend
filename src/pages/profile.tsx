@@ -20,12 +20,12 @@ import { isUnauthorizedError } from "../lib/authUtils";
 import { Camera, Menu } from "lucide-react";
 import { toast } from "sonner";
 import { profileSchema, type ProfileType } from "../shemas/profile-schemas";
+import type { UserType } from "../types";
 
 export default function Profile() {
-  const { isLoading, user } = useAuth();
+  const { isLoading, user } = useAuth<UserType>();
   const queryClient = useQueryClient();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [profileImage, setProfileImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
 
   const form = useForm<ProfileType>({
@@ -79,17 +79,16 @@ export default function Profile() {
 
       const response = await apiRequest(
         "PUT",
-        `/user/${user.id}`,
+        `/user/${user?.id}`,
         null,
         formData
       );
 
       return response;
     },
-    onSuccess: (data) => {
-      console.log(data);
+    onSuccess: (data: any) => {
       toast.success("Success: Profile image updated successfully");
-      setPreviewUrl(data.avatar);
+      setPreviewUrl(data?.avatar);
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
     },
     onError: () => {
@@ -100,7 +99,6 @@ export default function Profile() {
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setProfileImage(file);
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
       await uploadImageMutation.mutateAsync(file);
@@ -109,9 +107,8 @@ export default function Profile() {
 
   const onSubmit = async (data: ProfileType) => {
     try {
-      console.log(data);
       await updateProfileMutation.mutateAsync(data);
-    } catch (err: any) {
+    } catch (err) {
       console.log(err);
     }
   };
@@ -176,8 +173,8 @@ export default function Profile() {
                       <Avatar className="w-24 h-24">
                         <AvatarImage src={previewUrl} alt="Profile" />
                         <AvatarFallback>
-                          {user.firstName?.[0]}
-                          {user.lastName?.[0]}
+                          {user?.firstName?.[0]}
+                          {user?.lastName?.[0]}
                         </AvatarFallback>
                       </Avatar>
                       <label

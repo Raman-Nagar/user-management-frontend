@@ -14,6 +14,7 @@ import { Camera, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { profileSchema, type ProfileType } from "../shemas/profile-schemas";
 import type { UserType } from "../types";
+import { logout } from "../hooks/useAuth";
 
 interface UpdateUserModalProps {
   open: boolean;
@@ -23,9 +24,8 @@ interface UpdateUserModalProps {
 
 export function UpdateUserModal({ open, onClose, user }: UpdateUserModalProps) {
   const queryClient = useQueryClient();
-  const [updateUserImage, setUpdateUserImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
-  console.log({ user, open });
+
   const form = useForm<ProfileType>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
@@ -58,7 +58,7 @@ export function UpdateUserModal({ open, onClose, user }: UpdateUserModalProps) {
       if (isUnauthorizedError(error)) {
         toast.error("Unauthorized: You are logged out. Logging in again...");
         setTimeout(() => {
-          window.location.href = "/api/login";
+          logout();
         }, 500);
         return;
       }
@@ -81,9 +81,9 @@ export function UpdateUserModal({ open, onClose, user }: UpdateUserModalProps) {
 
       return response;
     },
-    onSuccess: (data) => {
+    onSuccess: (data: any) => {
       toast.success("Success: UpdateUser image updated successfully");
-      setPreviewUrl(data.avatar);
+      setPreviewUrl(data?.avatar);
       queryClient.invalidateQueries({ queryKey: ["/api/users"] });
       queryClient.invalidateQueries({ queryKey: ["/api/users/stats"] });
     },
@@ -95,7 +95,6 @@ export function UpdateUserModal({ open, onClose, user }: UpdateUserModalProps) {
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setUpdateUserImage(file);
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
       await uploadImageMutation.mutateAsync(file);

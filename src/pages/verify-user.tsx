@@ -11,20 +11,20 @@ const VerifyUser = () => {
   const token = searchParams.get("token");
   const navigate = useNavigate();
 
-  const { data, isLoading, error } = useQuery({
+  const { isLoading, error, isSuccess } = useQuery({
     queryKey: ["verify-user", token],
     queryFn: async () => await verifyEmail(token),
     enabled: !!token,
   });
 
   useEffect(() => {
-    if (data?.message) {
+    if (isSuccess) {
       const timeout = setTimeout(() => {
         navigate("/login");
       }, 3000);
       return () => clearTimeout(timeout);
     }
-  }, [data, navigate]);
+  }, [isSuccess, navigate]);
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100 px-4">
@@ -54,11 +54,11 @@ const VerifyUser = () => {
             </div>
           )}
 
-          {data?.message && (
+          {isSuccess && (
             <div className="flex flex-col items-center text-green-600">
               <CheckCircle2 className="h-10 w-10 mb-2" />
               <p className="font-semibold">Email Verified</p>
-              <p className="text-sm mt-1">{data.message}</p>
+              <p className="text-sm mt-1">Email verified successful</p>
               <p className="text-xs text-muted-foreground mt-2">
                 Redirecting to login...
               </p>

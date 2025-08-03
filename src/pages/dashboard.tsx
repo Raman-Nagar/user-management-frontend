@@ -16,16 +16,17 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { apiRequest } from "../lib/queryClient";
+import type { UserStateType, UserType } from "../types";
 
 export default function Dashboard() {
-  const { isAuthenticated, isLoading, user } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth<UserType>();
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const { data: stats, isLoading: statsLoading } = useQuery({
+  const { data: stats, isLoading: statsLoading } = useQuery<UserStateType>({
     queryKey: ["/api/users/stats"],
     queryFn: async () => await apiRequest("GET", "/user/stats"),
-    enabled: !!user && user.role === "admin",
+    enabled: !!user && user?.role === "admin",
     retry: false,
   });
 
