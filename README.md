@@ -7,7 +7,7 @@ It supports authentication, profile management, role-based UI, and email verific
 
 ## 🌐 Live URL
 
-> [user-management-frontend-swart.vercel.app](user-management-frontend-swart.vercel.app)  
+> [user-management-frontend-swart.vercel.app](https://user-management-frontend-swart.vercel.app)  
 
 ---
 
